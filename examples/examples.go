@@ -1,6 +1,7 @@
 package examples
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -14,6 +15,18 @@ func ExampleFuncWithResult(s string) string {
 
 func ExampleFuncWithResultAndError(s string) (int, error) {
 	return 2, fmt.Errorf("Hello: %s", s)
+}
+
+func ExampleFuncWithMultipleResults(s string) (string, int) {
+	return fmt.Sprintf("1: %s", s), len(s)
+}
+
+func ExampleFuncWithMultipleResultsAndError(s, e string) (string, int, error) {
+	if e == "" {
+		return fmt.Sprintf("1: %s", s), len(s), nil
+	} else {
+		return "", len(s), errors.New(e)
+	}
 }
 
 type stru struct {

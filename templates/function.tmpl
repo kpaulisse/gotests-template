@@ -26,7 +26,9 @@ func {{.TestName}}(t *testing.T) {
 			{{- end}}
 		{{- end}}
 		{{- if gt $returns 1 }}
-		// Need to handle multiple expected results
+			{{- range $index, $el := .TestResults}}
+			ExpectedResult{{$index}} {{$el.Type}}
+			{{- end}}
 		{{- end}}
 		{{- if .ReturnsError}}
 		ExpectedError string
@@ -49,6 +51,15 @@ func {{.TestName}}(t *testing.T) {
 						ExpectedResult: "",
 					{{- else }}
 						// ExpectedResult: {{.Type.Value}},
+					{{- end }}
+				{{- end}}
+			{{- end}}
+			{{- if gt $returns 1 }}
+				{{- range $index, $el := .TestResults}}
+					{{- if eq $el.Type.Value "string" }}
+						ExpectedResult{{$index}}: "",
+					{{- else }}
+						// ExpectedResult{{$index}}: {{$el.Type.Value}},
 					{{- end }}
 				{{- end}}
 			{{- end}}
@@ -89,8 +100,26 @@ func {{.TestName}}(t *testing.T) {
 				} else {
 					assert.EqualError(t, err, tc.ExpectedError)
 				}
+			{{- else if and (eq $returns 0) (not $f.ReturnsError) }}
+				{{template "call" .}}
+				// TODO: Add assertions
 			{{- else }}
-				// TODO: Call function and make assertions
+				{{template "results" .}} {{template "call" .}}
+				{{- if $f.ReturnsError }}
+					if tc.ExpectedError == "" {
+						if assert.Nil(t, err) {
+							{{- range $index, $el := .TestResults}}
+							assert.Equal(t, tc.ExpectedResult{{$index}}, result{{$index}})
+							{{- end }}
+						}
+					} else {
+						assert.EqualError(t, err, tc.ExpectedError)
+					}
+				{{- else }}
+					{{- range $index, $el := .TestResults}}
+						assert.Equal(t, tc.ExpectedResult{{$index}}, result{{$index}})
+					{{- end }}
+				{{- end }}
 			{{- end}}
 		})
 	}
