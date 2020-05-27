@@ -70,11 +70,9 @@ func {{.TestName}}(t *testing.T) {
 		// TODO: Add test cases.
 	}
 
-	{{ if .Parallel}}t.Parallel(){{end}}
 	for _, tcase := range testCases {
 		tc := tcase
 		t.Run(tc.Name, func(t *testing.T) {
-			{{- if .Parallel}}t.Parallel(){{end}}
 			{{- with .Receiver}}
 			{{Receiver .}} := tc.Receiver
 			{{- end}}
