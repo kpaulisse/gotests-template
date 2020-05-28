@@ -6,9 +6,12 @@
 package {{.Package}}
 
 import (
-{{range .Imports}}{{.Name}} {{.Path}}
-{{- if eq .Path $testifyPath }}{{- $hasTestify = true }}{{- end }}
-{{end}}
+{{- range .Imports}}
+  {{- if ne .Path ""}}
+    {{.Name}} {{.Path}}
+  {{- end }}
+  {{- if eq .Path $testifyPath }}{{- $hasTestify = true }}{{- end }}
+{{- end}}
 {{- if eq $hasTestify false }}
   {{$testifyPath}}
 {{- end }}

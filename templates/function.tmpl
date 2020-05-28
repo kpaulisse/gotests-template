@@ -22,7 +22,7 @@ func {{.TestName}}(t *testing.T) {
 		{{- if eq $returns 1 }}
 			{{- $testResultsZero := index .TestResults 0 }}
 			{{- with $testResultsZero }}
-				ExpectedResult {{if .Type.IsStar}}&{{end}}{{.Type.Value}}
+				ExpectedResult {{if .Type.IsStar}}*{{end}}{{.Type.Value}}
 			{{- end}}
 		{{- end}}
 		{{- if gt $returns 1 }}
@@ -50,7 +50,7 @@ func {{.TestName}}(t *testing.T) {
 					{{- if eq .Type.Value "string" }}
 						ExpectedResult: "",
 					{{- else }}
-						// ExpectedResult: {{.Type.Value}},
+						// ExpectedResult: {{if .Type.IsStar}}&{{end}}{{.Type.Value}},
 					{{- end }}
 				{{- end}}
 			{{- end}}
@@ -122,5 +122,4 @@ func {{.TestName}}(t *testing.T) {
 		})
 	}
 }
-
 {{end}}
