@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+func ExampleFuncWithStructInput(s stru) string {
+	return s.ExampleFuncWithReturn()
+}
+
 func ExampleFuncWithError(s string) error {
 	return fmt.Errorf("Error: %s", s)
 }
