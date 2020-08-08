@@ -3,21 +3,15 @@
 {{- $returns := len .TestResults }}
 
 func {{.TestName}}(t *testing.T) {
-	{{- if .TestParameters}}
-	type args struct {
-		{{- range .TestParameters}}
-		{{Param .}} {{.Type}}
-		{{- end}}
-	}
-
-	{{ end}}
 	type testcase struct {
 		Name string
 		{{- with .Receiver}}
 		Receiver {{if .Type.IsStar}}*{{end}}{{.Type.Value}}
 		{{- end}}
 		{{- if .TestParameters}}
-		Args args
+			{{- range .TestParameters}}
+			{{Param . | title}} {{.Type}}
+			{{- end}}
 		{{- end}}
 		{{- if eq $returns 1 }}
 			{{- $testResultsZero := index .TestResults 0 }}
@@ -41,9 +35,6 @@ func {{.TestName}}(t *testing.T) {
 			{{- with .Receiver}}
 			Receiver: {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{},
 			{{- end}}
-			{{- if .TestParameters}}
-			Args: args{},
-			{{- end}}
 			{{- if eq $returns 1 }}
 				{{- $testResultsZero := index .TestResults 0 }}
 				{{- with $testResultsZero }}
@@ -64,16 +55,23 @@ func {{.TestName}}(t *testing.T) {
 				{{- end}}
 			{{- end}}
 			{{- if .ReturnsError}}
-			ExpectedError: "String here (empty if no error expected)",
+			ExpectedError: "",
 			{{- end}}
 		},
 		// TODO: Add test cases.
 	}
 
+	{{if .Parallel}}
+	t.Parallel()
+	{{- end}}
 	for _, tcase := range testCases {
 		tc := tcase
 		t.Run(tc.Name, func(t *testing.T) {
-			{{- with .Receiver}}
+			{{- if .Parallel}}
+			t.Parallel()
+			{{- end}}
+
+			{{with .Receiver}}
 			{{Receiver .}} := tc.Receiver
 			{{- end}}
 
