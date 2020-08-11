@@ -49,7 +49,7 @@ Now, configure your editor (here's an example for vscode):
 
 Go: Generate Tests Flags
 
-- Add Item: `-template_dir=/path/to/templates/kpaulisse-gotests-template`
+- Add Item: `-template_dir=/path/to/templates/kpaulisse-gotests-template/templates`
 - Add Item: `-parallel` (assuming you want this)
 
 ## Limitations
