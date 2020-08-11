@@ -43,7 +43,7 @@ This should create `gotests` in your `go/bin` directory. Make sure that `which g
 You'll then clone this repository somewhere that you want to store templates.
 
 1. `cd /path/to/templates`
-1. `git clone https://github.com/kpaulisse/gotests-template.git kpaulisse-gotests-template`
+1. `git clone git@github.com:kpaulisse/gotests-template.git kpaulisse-gotests-template`
 
 Now, configure your editor (here's an example for vscode):
 
