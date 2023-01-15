@@ -6,9 +6,9 @@ If you disagree with my opinions and preferences, nothing is forcing you to use 
 
 ## Features
 
-- Creates a separate struct for the test cases and an array based on that struct. I find this to be more readable than the default templates which use an anonymous struct.
+- For methods, omits the receiver object and its fields. I've generally found that the receiver gets initialized by custom code most of the time (often with additional parameters e.g. to specify mocks). I rarely if ever passed in a receiver with parameters in the table driven test parameters...
 
-- Does not use `Args` but instead promotes each parameter as a capitalized, first-class member of the `testcase` struct.
+- Does not use `Args` but instead promotes each parameter as a capitalized, first-class member of the `testcase` struct. I find this to be more readable, especially for functions that (hopefully) don't have a super long list of parameters!
 
 - Has excellent support for the following types of functions/methods:
 
@@ -20,9 +20,7 @@ If you disagree with my opinions and preferences, nothing is forcing you to use 
 
 ## Maturity
 
-This project is maintained only as I need capabilities for personal or professional tasks.
-
-This is whatever comes before "alpha" (and frankly, it's not likely ever to progress beyond that). It's not being operated or supported as a project intended for others to use and contribute to at this point. That's why there's no CI and all development is via YOLO pushes to master for now.
+This project is maintained only as I need capabilities for personal or professional tasks. I share this in hopes it may be useful, but this is not being operated or supported as a project intended for others to use and contribute to at this point.
 
 ## Installation
 
@@ -31,6 +29,7 @@ You need to use my fork of `gotests` because I've made some changes:
 - Added [sprig](https://github.com/Masterminds/sprig) template functions
 - Incorporated [PR#80 - gotests generate test names with MixedCaps](https://github.com/cweill/gotests/pull/80) (updated branch to resolve merge conflicts as of August 2020 and get tests to pass)
 - Latest unreleased gotests features, specifically the `-parallel` flag
+- Keeping dependencies up-to-date (as of January 2023) since the upstream repository has gone dormant
 
 Here's how to install my fork of `gotests` (warning - may replace your stock copy, so only do this if you know what you're doing):
 

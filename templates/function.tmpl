@@ -3,11 +3,8 @@
 {{- $returns := len .TestResults }}
 
 func {{.TestName}}(t *testing.T) {
-	type testcase struct {
+	cases := []struct {
 		Name string
-		{{- with .Receiver}}
-		Receiver {{if .Type.IsStar}}*{{end}}{{.Type.Value}}
-		{{- end}}
 		{{- if .TestParameters}}
 			{{- range .TestParameters}}
 			{{Param . | title}} {{.Type}}
@@ -27,14 +24,9 @@ func {{.TestName}}(t *testing.T) {
 		{{- if .ReturnsError}}
 		ExpectedError string
 		{{- end}}
-	}
-
-	testCases := []testcase {
+	}{
 		{
 			Name: "Test case description",
-			{{- with .Receiver}}
-			Receiver: {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{},
-			{{- end}}
 			{{- if eq $returns 1 }}
 				{{- $testResultsZero := index .TestResults 0 }}
 				{{- with $testResultsZero }}
@@ -64,22 +56,23 @@ func {{.TestName}}(t *testing.T) {
 	{{if .Parallel}}
 	t.Parallel()
 	{{- end}}
-	for _, tcase := range testCases {
-		tc := tcase
+	for _, tc := range cases {
+		tc := tc // Avoid https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 		t.Run(tc.Name, func(t *testing.T) {
 			{{- if .Parallel}}
 			t.Parallel()
 			{{- end}}
 
 			{{with .Receiver}}
-			{{Receiver .}} := tc.Receiver
+			// TODO: Properly initialize receiver object
+			{{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{}
 			{{- end}}
 
 			{{- if $f.OnlyReturnsError}}
 				err := {{template "call" .}}
 
 				if tc.ExpectedError == "" {
-					assert.Nil(t, err)
+					assert.NoError(t, err)
 				} else {
 					assert.EqualError(t, err, tc.ExpectedError)
 				}
@@ -90,7 +83,7 @@ func {{.TestName}}(t *testing.T) {
 				result, err := {{template "call" .}}
 
 				if tc.ExpectedError == "" {
-					if assert.Nil(t, err) {
+					if assert.NoError(t, err) {
 						assert.Equal(t, tc.ExpectedResult, result)
 					}
 				} else {
@@ -103,7 +96,7 @@ func {{.TestName}}(t *testing.T) {
 				{{template "results" .}} {{template "call" .}}
 				{{- if $f.ReturnsError }}
 					if tc.ExpectedError == "" {
-						if assert.Nil(t, err) {
+						if assert.NoError(t, err) {
 							{{- range $index, $el := .TestResults}}
 							assert.Equal(t, tc.ExpectedResult{{$index}}, result{{$index}})
 							{{- end }}
